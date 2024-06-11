@@ -867,6 +867,162 @@ public class SoundManager : MonoBehaviour
 
 ---
 
+### 튜토리얼 메세지
+
+---
+
+게임의 목표를 플레이어에게 알려주기 위해 플레이어 캐릭터가 독백하는 느낌의 튜토리얼 문구와
+
+해야 할 일을 알려주는 목록을 출력하게 만들었습니다.
+
+![image](https://github.com/hayoungbin/C1Sourcecode/assets/167050593/9d5a5546-be9f-40a4-93b5-a1d04321c0ae)
+
+![image](https://github.com/hayoungbin/C1Sourcecode/assets/167050593/0f8a0d5e-c0c4-4c22-89c7-562eda4f4659)
+
+해당 기능은 TutorialManager.cs에서 구현한 기능들로 이루어져있으며 코루틴을 적극 활용해보았습니다.
+
+```cs
+<C#>
+public class TutorialManager : MonoBehaviour
+{
+    private static TutorialManager _instance;
+
+    [SerializeField] private GameObject tutorialMassage;
+    [SerializeField] private GameObject toDoSlot;
+
+    private Canvas canvas;
+    [SerializeField]private GameObject slots;
+    private TextMeshProUGUI tutorialText;
+    private List<ToDoListData> toDoListData;
+
+    public bool tutorialstart = true;
+    public bool tutorialstartClear = false;
+    public bool tutoriallock = true;
+    public bool tutoriallockClear = false;
+
+    public static TutorialManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = new GameObject("TutorialManager").AddComponent<TutorialManager>();
+            }
+            return _instance;
+        }
+    }
+
+    private void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            if (_instance != this)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+        tutorialText = tutorialMassage.GetComponentInChildren<TextMeshProUGUI>();
+        toDoListData = new List<ToDoListData>();
+    }
+    private void Start()
+    {
+        if (tutorialstart)
+        {
+            StartCoroutine(OnTutorialMassage("여긴 어디지? 너무 어둡다... 뭔가 빛을 비출 만한 게 없나?", "조명이 될 만한 것을 찾자", "start"));
+            tutorialstart = false;
+        }
+    }
+
+    public void ClearLock()
+    {
+        StartCoroutine(OnTutorialMassage("열었으니 됐지 뭐"));
+        StartCoroutine(OnCompleteToDo("lock"));
+        tutoriallockClear = true;
+    }
+    public void UpdateToDo()
+    {
+        GameObject[] obj = GameObject.FindGameObjectsWithTag("Slots");
+        for (int i = 0; i < obj.Length; i++)
+        {
+            Destroy(obj[i]);
+        }
+        TextMeshProUGUI text;
+        for(int i = 0; i < toDoListData.Count; i++)
+        {
+            GameObject go = Instantiate(toDoSlot, slots.transform);
+            text = go.GetComponentInChildren<TextMeshProUGUI>();
+            text.text = toDoListData[i]._text;
+        }
+    }
+    public IEnumerator OnTutorialMassage(string massage, string text, string title)
+    {
+        tutorialText.text = massage;
+        if (GameObject.Find("TutorialMassage(Clone)") != null)
+        {
+            Destroy(GameObject.Find("TutorialMassage(Clone)"));
+        }
+        GameObject go = Instantiate(tutorialMassage, canvas.transform);
+        yield return new WaitForSeconds(3);
+        Destroy(go);
+        ToDoListData start = new ToDoListData(text, title);
+        toDoListData.Add(start);
+        UpdateToDo();
+        tutorialText.text = null;
+    }
+    public IEnumerator OnTutorialMassage(string massage)
+    {
+        tutorialText.text = massage;
+        GameObject go = Instantiate(tutorialMassage, canvas.transform);
+        yield return new WaitForSeconds(3);
+        Destroy(go);
+        tutorialText.text = null;
+    }
+    public IEnumerator OnCompleteToDo(string title)
+    {
+        for (int i = 0; i < toDoListData.Count; i++)
+        {
+            if (toDoListData[i]._title == title)
+            {
+                toDoListData[i]._text = $"<s>{toDoListData[i]._text}</s>";
+                break;
+            }
+        }
+        UpdateToDo();
+
+        yield return new WaitForSeconds(1);
+
+        for (int i = 0; i < toDoListData.Count; i++)
+        {
+            if (toDoListData[i]._title == title)
+            {
+                toDoListData.Remove(toDoListData[i]);
+                break;
+            }
+        }
+        UpdateToDo();
+    }
+```
+
+또한 이 기능을 구현하면서 생긴 문제에 대해 튜터님께 조언을 구하는 과정에서 캐싱에 대한 내용도 추가로 알게되었습니다.
+
+UI를 생성하고 파괴할 때 Instantiate를 자주 사용했었고, 이 때 GameObject.Find()도 자주 사용하였는데
+
+앞으로는 더 나은 방법으로 작업할 수 있을 것 같습니다.
+
+---
+
+### 로딩 화면
+
+---
+
+![image](https://github.com/hayoungbin/C1Sourcecode/assets/167050593/432e8cbf-6ce3-4c5f-b1d5-2860798beb0f)
 
 
 ---
