@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db4433e150da3b3429a6d627eb6453ef, type: 3}
+  m_Name: Axe_SO
+  m_EditorClassIdentifier: 
+  description: "\uBB34\uC5C7\uC778\uAC00\uB97C \uD30C\uAD34 \uD560 \uC218 \uC788\uC744
+    \uAC83 \uAC19\uB2E4..."
+  icon: {fileID: 21300000, guid: 956644373bdf5e84da957e0fca59abe7, type: 3}
+  a: 5
+  equipPrefab: {fileID: 6247042300249296460, guid: c2696c8f158bea745ad75388861374d3, type: 3}
+  previewPrefab: {fileID: 7715003033073050911, guid: 12b0648c6ae7fcf4e8794908ea52964a, type: 3}
